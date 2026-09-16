@@ -143,8 +143,16 @@ with st.container(border=True, key='settings_user_list'):
     users = pd.DataFrame([dict(r) for r in conn.execute(
         "SELECT id, company, name, team, position, login_id, email, role, approved, can_upload, created_at FROM users ORDER BY id"
     ).fetchall()])
+    approval_filter = st.selectbox(
+        ':material/filter_list: 승인 상태', ['전체', '승인 완료', '승인 대기'],
+        key='settings_user_approval_filter', width=240)
+    approved_count = int(users['approved'].eq(1).sum())
+    st.caption(f'전체 {len(users):,}명 · 승인 완료 {approved_count:,}명 · 승인 대기 {len(users)-approved_count:,}명')
+    if approval_filter != '전체':
+        users = users[users['approved'].eq(1 if approval_filter == '승인 완료' else 0)].copy()
+    users['approved'] = users['approved'].map({1: '승인 완료', 0: '승인 대기'})
     users = search_table(users, 'settings_users_search')
-    _, user_selected = selectable_table(users, 'settings_users')
+    _, user_selected = selectable_table(users, 'settings_users', column_config={'approved': '승인 상태'})
     user_actions = st.container(horizontal=True, gap='small')
     if user_actions.button('선택 사용자 삭제',disabled=user_selected.empty, icon=':material/delete:'):
         confirm_settings_delete('사용자',user_selected)
