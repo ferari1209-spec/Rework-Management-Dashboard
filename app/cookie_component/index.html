@@ -3,17 +3,24 @@ const send=(type,data={})=>window.parent.postMessage({isStreamlitMessage:true,ty
 window.addEventListener('message',event=>{
   if(event.source!==window.parent || event.data.type!=='streamlit:render') return;
   const {token,operation,request_id,remember_email}=event.data.args;
+  // The component is served below <app base>/component/<name>/.
+  const componentIndex=location.pathname.indexOf('/component/');
+  const cookiePath=componentIndex>=0?(location.pathname.slice(0,componentIndex)||'/'):'/';
   const name='rework_login';
   const value=operation==='delete'?'':encodeURIComponent(token);
-  document.cookie=`${name}=${value}; Path=/rework-dashboard; Max-Age=${operation==='delete'?0:28800}; SameSite=Strict${location.protocol==='https:'?'; Secure':''}`;
+  try {
+  document.cookie=`${name}=${value}; Path=${cookiePath}; Max-Age=${operation==='delete'?0:28800}; SameSite=Strict${location.protocol==='https:'?'; Secure':''}`;
   const saved=document.cookie.split('; ').find(v=>v.startsWith(name+'='));
   let ok=operation==='delete'?!saved:saved===name+'='+value;
   if(typeof remember_email==='string') {
-    document.cookie=`rework_saved_email=${encodeURIComponent(remember_email)}; Path=/rework-dashboard; Max-Age=${remember_email?2592000:0}; SameSite=Strict${location.protocol==='https:'?'; Secure':''}`;
+    document.cookie=`rework_saved_email=${encodeURIComponent(remember_email)}; Path=${cookiePath}; Max-Age=${remember_email?2592000:0}; SameSite=Strict${location.protocol==='https:'?'; Secure':''}`;
     const remembered=document.cookie.split('; ').find(v=>v.startsWith('rework_saved_email='));
     ok=ok && (remember_email?remembered==='rework_saved_email='+encodeURIComponent(remember_email):!remembered);
   }
   send('streamlit:setComponentValue',{value:{request_id,ok}});
+  } catch (_) {
+    send('streamlit:setComponentValue',{value:{request_id,ok:false}});
+  }
 });
 send('streamlit:componentReady',{apiVersion:1});
 send('streamlit:setFrameHeight',{height:0});
