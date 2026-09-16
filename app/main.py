@@ -15,10 +15,18 @@ seed_settings(conn)
 flush_cookie()
 user = current_user()
 if not user:
-    with st.container(key='auth_card'):
-        st.markdown(f'<div class="auth-brand">{logo_html()}</div><div class="auth-description">재작업 통합 관리 시스템</div>', unsafe_allow_html=True)
-        ensure_bootstrap_admin(conn)
-        render_auth_screen(conn)
+    def login_page():
+        with st.container(key='auth_card'):
+            st.markdown(f'<div class="auth-brand">{logo_html()}</div><div class="auth-description">재작업 통합 관리 시스템</div>', unsafe_allow_html=True)
+            ensure_bootstrap_admin(conn)
+            render_auth_screen(conn)
+
+    # Register navigation before rendering authentication so pages/ discovery
+    # never exposes the automatic sidebar on a fresh server session.
+    try:
+        st.navigation([st.Page(login_page, title='로그인', default=True)], position='hidden').run()
+    finally:
+        conn.close()
     st.stop()
 pages = [st.Page("pages/1_개요.py", title="개요", icon=':material/dashboard:', default=True)]
 menu_icons = dict(upload='upload_file',inventory='inventory_2',history='task_alt',cost='calculate',master='download',analysis='analytics')
