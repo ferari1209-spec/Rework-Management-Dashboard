@@ -1,0 +1,118 @@
+.stApp {isolation:isolate;background:#f3f5fa;color:#243954}
+.stApp::before {content:"";position:fixed;inset:0;z-index:0;background-size:100% auto;background-position:center;background-repeat:no-repeat;filter:none;opacity:1;pointer-events:none}
+[data-testid="stAppViewContainer"] {position:relative;z-index:1;background:transparent!important}
+[data-testid="stMain"] {background:transparent!important}
+.stApp:has(.st-key-auth_card)::before {display:none}
+.atec-logo {display:block;width:201px;height:auto;max-width:100%;object-fit:contain;background:#fff;border-radius:5px;padding:7px 10px;box-sizing:content-box}
+.auth-brand .atec-logo {width:241px;max-width:calc(100% - 20px);margin:0 auto 16px;padding:0;background:transparent;border-radius:0}
+[data-testid="stMainBlockContainer"] {max-width:none;width:100%;padding:1.5rem 0 3rem}
+header[data-testid="stHeader"] {background:#ffffffed;border-bottom:1px solid #e1e7f0}
+h2,h3 {color:#203650;letter-spacing:-.035em}
+h3 {font-size:1.05rem!important}
+[data-testid="stVerticalBlock"] {gap:1rem}
+[data-testid="stVerticalBlockBorderWrapper"]>div {background:#fff;border-radius:16px}
+[data-testid="stDataFrame"],[data-testid="stDataEditor"] {border:1px solid #e6ebf3;border-radius:12px;overflow:hidden;box-shadow:0 3px 5px #2036500a,0 8px 20px #20365010}
+[data-baseweb="input"],[data-baseweb="select"]>div {background:#f8faff;border-color:#dce5f1;border-radius:9px}
+[data-testid="stButton"] button,[data-testid="stDownloadButton"] button {border-radius:9px;font-weight:600}
+[data-testid="stSegmentedControl"] {margin-bottom:.5rem}
+.rework-banner {position:relative;background:linear-gradient(145deg,#203b55,#182c42 65%,#14263b);border:1px solid #35516a;border-right-color:#102135;border-bottom-color:#0c1d30;box-shadow:inset 0 1px 1px #ffffff20,inset 0 -2px 3px #07132255,0 8px 18px #07132255;padding:24px 30px;border-radius:16px;color:white;display:grid;grid-template-columns:minmax(300px,1fr) minmax(0,1.6fr) minmax(160px,1fr);gap:24px;align-items:center;margin:8px 12px;min-height:178px;box-sizing:border-box}
+.rework-heading {min-width:0}
+.rework-slogan {text-align:center;color:#fff;line-height:1.4;min-width:0;padding:4px 0}
+.slogan-technology {color:#ff0056;font-size:18px;font-weight:600;letter-spacing:6px;margin-bottom:10px}
+.slogan-intro {font-size:25px;font-weight:300;letter-spacing:-1px}
+.slogan-message {font-size:clamp(17px,1.55vw,28px);font-weight:300;letter-spacing:-1px;margin-top:3px;word-break:keep-all}
+.slogan-message strong {font-weight:750}
+@media(max-width:1100px){.rework-banner{grid-template-columns:minmax(270px,1fr) minmax(0,1.2fr)}.rework-meta{grid-column:1/-1}.slogan-message{font-size:20px}}
+.rework-banner::before {content:none}
+.rework-banner .rework-title {text-shadow:0 2px 9px rgba(0,0,0,.24)}
+.rework-brand {font-size:11px;letter-spacing:2px;color:#8be0d7;font-weight:700;margin-bottom:8px}
+.rework-title {font-size:26px;font-weight:750;letter-spacing:-.8px;line-height:1.4}
+.rework-subtitle {font-size:12px;color:#c1d2e2;margin-top:6px}
+.rework-meta {font-size:12px;text-align:right;line-height:1.9;color:#d5e1ed;white-space:nowrap}
+.kpi-card {background:linear-gradient(145deg,#fff,#f7f9fc)!important;border:1px solid #e5eaf3;border-bottom-color:#cbd5e2;border-top:3px solid #1aa7b4;color:#203650!important;border-radius:13px;padding:17px 19px;min-height:131px;box-shadow:inset 0 1px 0 #fff,0 3px 5px #2036500d,0 9px 20px #20365018}
+.kpi-card.warn {border-top-color:#efa729}.kpi-card.warn .kpi-value {color:#d78c0b}
+.kpi-card.ok {border-top-color:#1da68d}.kpi-card.ok .kpi-value {color:#168c77}
+.kpi-card.alert {border-top-color:#ef5360}.kpi-card.alert .kpi-value {color:#e34656}
+.kpi-label {font-size:12px;color:#7889a4;font-weight:650}
+.kpi-value {font-size:29px;line-height:1.5;font-weight:750;letter-spacing:-.6px}
+.kpi-note {font-size:11px;color:#8999b0;margin-top:8px}
+.section-heading {font-weight:700;color:#203650;font-size:15px;margin-bottom:4px}
+.st-key-age_panel,.st-key-status_panel,.st-key-team_panel,.st-key-trend_panel,.st-key-site_panel,.st-key-detail_panel {background:#fff;border-color:#e3e9f2!important;border-radius:15px!important;box-shadow:inset 0 1px 0 #fff,0 3px 5px #2036500a,0 9px 24px #20365014}
+.section-caption {color:#8190a7;font-size:12px;margin-bottom:8px}
+.st-key-auth_card {max-width:470px;margin:5vh auto 0;background:white;border:1px solid #e0e7f2;border-radius:23px;padding:30px 32px;box-shadow:0 20px 70px #19365a1c}
+.st-key-auth_card .auth-brand {text-align:center;font-size:27px;font-weight:750;color:#1a3556;margin-bottom:5px}
+.auth-brand span {color:#e7005b}
+.auth-description {text-align:center;color:#7a8ba6;font-size:13px;margin-bottom:18px}
+[data-testid="stTabs"] [data-baseweb="tab-list"] {gap:5px;border-bottom:2px solid #233650}
+[data-testid="stTabs"] [data-baseweb="tab"] {border-radius:8px 8px 0 0;background:#edf2f9;padding:10px 18px}
+[data-testid="stTabs"] [aria-selected="true"] {background:#1c2e49;color:white}
+@media(max-width:760px){[data-testid="stMainBlockContainer"]{padding:1rem 0}.rework-banner{padding:20px;display:block}.rework-title{font-size:21px}.rework-meta{text-align:left;margin-top:12px}.st-key-auth_card{padding:22px 18px}.kpi-card{min-height:115px}}
+@media(max-width:760px){.rework-slogan{margin-top:22px;padding-top:16px;border-top:1px solid #ffffff15}.slogan-intro{font-size:22px}.slogan-message{font-size:19px}}
+
+/* 모든 그래프의 공통 디자인 */
+.st-key-age_panel,.st-key-status_panel,.st-key-team_panel,.st-key-trend_panel,.st-key-site_panel,.st-key-history_chart {
+    background:linear-gradient(160deg,#f5f8fb,#edf3f8)!important;
+    border:1px solid #d3dfe9!important;
+    box-shadow:inset 0 1px 0 #fff,0 4px 8px #2036500a,0 12px 26px #20365014;
+}
+.st-key-age_panel h3,.st-key-status_panel h3,.st-key-team_panel h3,.st-key-trend_panel h3,.st-key-site_panel h3,.st-key-history_chart h3 {
+    background:#e5edf4;
+    border-left:3px solid #18a6b5;
+    border-radius:7px;
+    padding:10px 13px!important;
+    margin:0 0 4px!important;
+}
+.st-key-history_chart {border-radius:15px!important}
+.st-key-trend_panel [data-testid="stPlotlyChart"],.st-key-history_chart [data-testid="stPlotlyChart"] {min-width:760px}
+.st-key-trend_panel,.st-key-history_chart {overflow-x:auto}
+.chart-values {overflow-x:auto;max-width:100%;border:1px solid #d3dfe9;border-radius:8px;background:#f5f8fb;margin-top:6px}
+.chart-values table {border-collapse:collapse;width:100%;font-size:12px;color:#203650;table-layout:auto}
+.chart-values caption {text-align:left;padding:8px 12px;font-weight:600;color:#566c88}
+.chart-values th,.chart-values td {white-space:nowrap;min-width:85px;padding:9px 12px;text-align:right;border:1px solid #dfe7ee}
+.chart-values th {background:#e5edf4;font-weight:700}
+.chart-values tbody th {text-align:left;min-width:110px}
+/* 간결한 필터: 표/그래프 폭은 유지 */
+[data-testid="stSelectbox"],[data-testid="stDateInput"] {max-width:260px}
+[data-testid="stSelectbox"] [data-baseweb="select"]>div,
+[data-testid="stDateInput"] [data-baseweb="input"] {background:#f0f2f6;border-color:#dce2ea;border-radius:12px;min-height:36px}
+.st-key-compact_filters {max-width:100%}
+.st-key-settings_manager_list,.st-key-settings_manager_add,.st-key-settings_user_list,.st-key-settings_permissions,.st-key-settings_reset {background:linear-gradient(145deg,#f5f8fb,#edf3f8)!important;border:1px solid #d3dfe9!important;border-radius:14px!important;box-shadow:inset 0 1px 0 #fff,0 5px 15px #20365012}
+.st-key-settings_manager_list h3,.st-key-settings_manager_add h3,.st-key-settings_user_list h3,.st-key-settings_permissions h3,.st-key-settings_reset h3 {background:#e5edf4;border-left:3px solid #18a6b5;border-radius:7px;padding:10px 12px!important}
+.st-key-settings_inventory_card,.st-key-settings_cost_card,.st-key-settings_category_card {background:linear-gradient(145deg,#f5f8fb,#edf3f8)!important;border:1px solid #d3dfe9!important;border-radius:14px!important;box-shadow:inset 0 1px 0 #fff,0 5px 15px #20365012;min-height:290px}
+.st-key-settings_inventory_card h3,.st-key-settings_cost_card h3,.st-key-settings_category_card h3 {background:#e5edf4;border-left:3px solid #18a6b5;border-radius:7px;padding:10px 12px!important}
+.st-key-cost_summary_done,.st-key-cost_summary_hours,.st-key-cost_summary_cost {background:linear-gradient(145deg,#f8fbfd,#edf3f8);border:1px solid #d5e0ea;border-top:3px solid #18a6b5;border-radius:14px;padding:18px 22px;min-height:160px;box-sizing:border-box;box-shadow:inset 0 1px 0 #fff,0 5px 15px #20365014}
+.st-key-cost_summary_hours {border-top-color:#486988}
+.st-key-cost_summary_cost {border-top-color:#247c83}
+.st-key-cost_summary_done h4,.st-key-cost_summary_hours h4,.st-key-cost_summary_cost h4 {font-size:15px;margin:0;padding:0;color:#48627b}
+.cost-summary-value {font-size:34px;font-weight:750;letter-spacing:-.8px;line-height:1.4;color:#168c91;font-variant-numeric:tabular-nums}
+.cost-summary-value span {font-size:16px;font-weight:500;margin-left:6px;color:#61758a}
+.st-key-cost_summary_hours .cost-summary-value {color:#345474}
+.st-key-cost_summary_cost .cost-summary-value {color:#17686e}
+.st-key-inventory_manage_card,.st-key-inventory_edit_card,.st-key-inventory_complete_card {background:linear-gradient(145deg,#f5f8fb,#edf3f8)!important;border:1px solid #d3dfe9!important;border-radius:14px!important;box-shadow:inset 0 1px 0 #fff,0 5px 15px #20365012;min-height:300px}
+.st-key-inventory_manage_card h3,.st-key-inventory_edit_card h3,.st-key-inventory_complete_card h3 {background:#e5edf4;border-left:3px solid #18a6b5;border-radius:7px;padding:10px 12px!important}
+[data-testid="stDownloadButton"] button:not(:disabled) {background:#247c83!important;border-color:#247c83!important;color:#fff!important;box-shadow:0 3px 8px #247c8320}
+[data-testid="stDownloadButton"] button:not(:disabled):hover {background:#1c656b!important;border-color:#1c656b!important;color:#fff!important}
+[data-testid="stDownloadButton"] button:not(:disabled):focus-visible {outline:3px solid #86cbd1;outline-offset:2px}
+[data-testid="stDownloadButton"] button:disabled {background:#eef1f4!important;border-color:#dce2e8!important;color:#98a3af!important;box-shadow:none;opacity:1}
+@media(max-width:640px){[data-testid="stSelectbox"],[data-testid="stDateInput"]{max-width:100%}}
+
+/* Bilingual header: keep the English title beside Korean when space permits. */
+.rework-banner {grid-template-columns:minmax(0,1.8fr) minmax(0,1fr) auto}
+.rework-heading {min-width:0}
+.rework-title {display:flex;flex-wrap:wrap;align-items:baseline;column-gap:12px;row-gap:2px}
+.rework-title-en {font-size:.8em;font-weight:600;letter-spacing:-.3px;color:#dce8f2}
+@media(max-width:1100px){.rework-banner{grid-template-columns:minmax(0,1fr)}.rework-meta{grid-column:auto}}
+
+/* Keep the native logout control inside the shared banner. */
+.st-key-rework_header {position:relative;margin:8px 12px;width:calc(100% - 24px);gap:0!important}
+.st-key-rework_header .rework-banner {margin:0;grid-template-columns:max-content minmax(0,1fr) 170px;gap:30px;min-height:178px}
+.st-key-rework_header .rework-meta {padding-bottom:48px}
+.st-key-rework_header .st-key-logout {position:absolute;right:30px;bottom:24px;width:150px}
+.st-key-rework_header .st-key-logout button {background:#fff!important;color:#203b55!important;border:1px solid #d5e0ea!important;opacity:1!important;transition:background-color .15s,border-color .15s}
+.st-key-rework_header .st-key-logout button:hover {background:#e5f3f5!important;color:#163c50!important;border-color:#79c6ce!important;box-shadow:0 0 0 2px #79c6ce40}
+.st-key-rework_header .st-key-logout button:active {background:#cce8ec!important;color:#163c50!important}
+.st-key-rework_header .st-key-logout button:focus-visible {outline:3px solid #79c6ce!important;outline-offset:3px}
+.st-key-rework_header .st-key-logout button :is(p,span,svg) {color:inherit!important}
+.st-key-rework_header .rework-slogan {justify-self:center}
+@media(max-width:1500px){.st-key-rework_header .rework-banner{grid-template-columns:minmax(0,1.4fr) minmax(0,1fr) 150px;gap:22px}}
+@media(max-width:1000px){.st-key-rework_header .rework-banner{grid-template-columns:minmax(0,1fr);padding-bottom:78px}.st-key-rework_header .rework-meta{padding-bottom:0;text-align:left}.st-key-rework_header .rework-slogan{margin:16px 0}.st-key-rework_header .st-key-logout{right:24px;bottom:20px}}

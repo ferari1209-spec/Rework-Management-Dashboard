@@ -1,0 +1,24 @@
+{
+  "완제품": {
+    "source_rows": 5918,
+    "after_cut": 5918,
+    "valid_rows": 1511,
+    "number_only_rows": 4407,
+    "date_fail": [],
+    "status_done": 1508,
+    "status_confirmed": 3,
+    "unmapped_columns": [],
+    "inserted": 1511
+  },
+  "대여": {
+    "source_rows": 1664,
+    "after_cut": 1663,
+    "valid_rows": 1570,
+    "number_only_rows": 93,
+    "date_fail": [],
+    "status_done": 1506,
+    "status_confirmed": 64,
+    "unmapped_columns": [],
+    "inserted": 1570
+  }
+}
