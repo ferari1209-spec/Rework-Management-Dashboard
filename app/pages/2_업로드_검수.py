@@ -8,7 +8,7 @@ sys.path.insert(0, str(Path(__file__).resolve().parents[2]))
 from app.auth import can_upload, require_login
 from app.db import RAW_DIR, get_connection, ensure_schema
 from app.services.upload_parser import detect_and_parse
-from app.services.import_service import commit_import, review_rows
+from app.services.import_service import commit_import, review_rows, editable_import_frame
 from app.ui import category_selector, inject_css, render_header
 
 st.set_page_config(page_title='업로드·검수', layout='wide')
@@ -21,7 +21,7 @@ require_menu('upload')
 render_header()
 category = category_selector()
 st.subheader('엑셀 업로드·검수')
-st.caption('ERP 입고 장표는 업로드일을 입고일로 기록합니다. 마스터 파일은 기존 날짜와 완료 이력을 보존합니다.')
+st.caption('ERP 입고 장표의 입고일 기본값은 업로드일이며 검수 표에서 변경할 수 있습니다. 마스터 파일은 기존 날짜와 완료 이력을 보존합니다.')
 logs = pd.read_sql_query('SELECT file_name AS 파일명, row_count AS 반영행수, status AS 상태, uploaded_by AS 업로더, created_at AS 기록시간 FROM upload_logs WHERE category=? ORDER BY id DESC LIMIT 50', conn, params=[category])
 with st.expander('업로드 이력', expanded=False):
     st.dataframe(logs, hide_index=True, use_container_width=True)
@@ -57,9 +57,10 @@ with st.expander('담당자 등록'):
         conn.execute('INSERT INTO managers(name,is_active) VALUES(?,1) ON CONFLICT(name) DO UPDATE SET is_active=1', (name.strip(),))
         conn.commit()
         st.success('등록되었습니다.')
-st.caption('표에서 수정하고 하단의 이상치 목록을 확인하세요. 원문은 보존되며 SITE·담당자·시리얼을 직접 수정할 수 있습니다.')
-edited = st.data_editor(state['frame'], num_rows='dynamic', hide_index=True, use_container_width=True,
-    disabled=['비고_원문','flags','has_issue'], key=f'editor_{key}')
+st.caption('검수 표의 모든 업무 항목을 수정할 수 있습니다. 날짜는 YYYY-MM-DD, 숫자는 숫자로 입력하세요. 투입공수의 - 또는 빈칸은 공수 미등록으로 반영합니다. 원본 업로드 파일은 별도 보존하며 확인사항은 아래에서 자동 계산합니다.')
+editable = editable_import_frame(state['frame'], state['kind'], state['day'])
+edited = st.data_editor(editable, num_rows='dynamic', hide_index=True, use_container_width=True,
+    column_config={col:st.column_config.TextColumn(col) for col in editable.columns}, key=f'editor_v2_{key}')
 reviewed = review_rows(edited, conn)
 issues = reviewed[reviewed['has_issue']]
 st.write(f'검수 대상 {len(reviewed):,}건 · 확인 필요 {len(issues):,}건')
@@ -68,7 +69,7 @@ if not issues.empty:
 checked = st.checkbox('수정 내용과 확인 필요 항목을 검수했습니다.', key=f'check_{key}')
 if st.button('검수 완료 · 마스터 반영', type='primary', disabled=not checked, icon=':material/task_alt:'):
     try:
-        count = commit_import(conn, reviewed, category, digest, upload.name, state['day'], user['login_id'], state['kind'])
+        count = commit_import(conn, reviewed, category, digest, upload.name, state['day'], user['login_id'], state['kind'], reviewed_dates=True)
     except (ValueError, PermissionError) as exc:
         st.error(str(exc))
     else:

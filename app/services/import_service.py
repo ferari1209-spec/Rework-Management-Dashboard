@@ -24,6 +24,16 @@ def clean(value):
     return value
 
 
+def editable_import_frame(frame, kind, uploaded_on):
+    """Use text columns so mixed numbers, blanks and '-' remain editable."""
+    out = frame.drop(columns=['flags','has_issue','category','status'], errors='ignore').copy()
+    if kind != 'master':
+        out['입고일'] = uploaded_on.isoformat()
+    for col in out:
+        out[col] = out[col].map(lambda value: '' if clean(value) is None else str(value)).astype('string')
+    return out
+
+
 def review_rows(frame, conn):
     from app.services.manager_service import fill_teams
     out = fill_teams(frame, conn)
@@ -49,13 +59,15 @@ def review_rows(frame, conn):
     return out
 
 
-def commit_import(conn, frame, category, digest, filename, uploaded_on, login_id, kind):
+def commit_import(conn, frame, category, digest, filename, uploaded_on, login_id, kind, reviewed_dates=False):
     authorize(conn, login_id, upload=True)
     from app.services.manager_service import fill_teams
     frame = fill_teams(frame, conn)
     records = []
     for number, row in enumerate(frame.to_dict('records'), 1):
         rec = {col: clean(row.get(col)) for col in INSERT_COLUMNS}
+        if rec['투입공수'] == '-':
+            rec['투입공수'] = None
         if not rec['모델명']:
             raise ValueError(f'{number}행 모델명을 입력하세요.')
         for col in ('입고수량', '완료수량', '투입공수', 'source_no'):
@@ -73,7 +85,7 @@ def commit_import(conn, frame, category, digest, filename, uploaded_on, login_id
             if rec[col] is not None and to_iso_date(rec[col]) is None:
                 raise ValueError(f'{number}행 {col} 날짜 형식을 확인하세요.')
             rec[col] = to_iso_date(rec[col])
-        if kind != 'master':
+        if kind != 'master' and not reviewed_dates:
             rec['입고일'] = uploaded_on.isoformat()
         rec['category'] = category
         rec['status'] = '완료' if is_completed(rec) else '확정'
