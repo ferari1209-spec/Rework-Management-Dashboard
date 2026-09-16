@@ -9,6 +9,12 @@ window.addEventListener('message',event=>{
   const name='rework_login';
   const value=operation==='delete'?'':encodeURIComponent(token);
   try {
+  if(operation==='read') {
+    const cookies=document.cookie.split('; ');
+    const read=name=>decodeURIComponent((cookies.find(v=>v.startsWith(name+'='))||'').slice(name.length+1));
+    send('streamlit:setComponentValue',{value:{request_id,ok:true,token:read('rework_login'),remember_email:read('rework_saved_email')}});
+    return;
+  }
   document.cookie=`${name}=${value}; Path=${cookiePath}; Max-Age=${operation==='delete'?0:28800}; SameSite=Strict${location.protocol==='https:'?'; Secure':''}`;
   const saved=document.cookie.split('; ').find(v=>v.startsWith(name+'='));
   let ok=operation==='delete'?!saved:saved===name+'='+value;

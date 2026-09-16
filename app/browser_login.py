@@ -8,7 +8,22 @@ cookie_component = components.declare_component('rework_login_cookie', path=str(
 
 
 def browser_token():
-    return st.context.cookies.get('rework_login')
+    token = st.context.cookies.get('rework_login')
+    if token:
+        return token
+    # Some hosted connections do not expose the component's cookies in the
+    # initial WebSocket headers. Read the browser before showing login.
+    if '_browser_cookie_read' not in st.session_state:
+        request_id = st.session_state.setdefault('_cookie_read_request', secrets.token_hex(8))
+        result = cookie_component(operation='read', request_id=request_id,
+                                  key='login_cookie_read', default=None)
+        if not result or result.get('request_id') != request_id:
+            st.caption('저장된 로그인 상태를 확인하고 있습니다…')
+            st.stop()
+        st.session_state['_browser_cookie_read'] = result.get('token', '') if result.get('ok') else ''
+        if result.get('ok'):
+            st.session_state['_saved_email'] = result.get('remember_email', '')
+    return st.session_state['_browser_cookie_read'] or None
 
 
 def saved_email():
