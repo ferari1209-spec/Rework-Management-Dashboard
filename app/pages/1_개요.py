@@ -171,8 +171,34 @@ with right,st.container(border=True,key='site_panel'):
 
 with st.container(border=True, key='completion_result_panel'):
     st.markdown('### 처리 결과별 완료수량')
-    st.caption('선택한 분류의 전체 누적 완료 내역 · 구분별 완료수량 합계 · 단위: 대')
     completed = df[df['status'] == '완료'].copy()
+    work_dates = pd.to_datetime(completed['재작업일'], errors='coerce').dt.normalize()
+    missing_dates = int(work_dates.isna().sum())
+    period_start = (this_month - 11).start_time.date()
+    period_end = this_month.end_time.date()
+    with st.container(horizontal=True):
+        period_mode = st.selectbox('조회 방식', ['최근 12개월', '연도별', '월별', '직접 설정'], key='completion_result_mode', width=200)
+        if period_mode in ('연도별', '월별'):
+            years = sorted(set(work_dates.dropna().dt.year.astype(int)) | {today.year}, reverse=True)
+            year = st.selectbox('조회 연도', years, index=years.index(today.year), key='completion_result_year', width=160)
+            if period_mode == '연도별':
+                period_start = pd.Timestamp(year=year, month=1, day=1).date()
+                period_end = pd.Timestamp(year=year, month=12, day=31).date()
+            else:
+                month = st.selectbox('조회 월', list(range(1,13)), index=today.month-1, format_func=lambda m:f'{m}월', key='completion_result_month', width=140)
+                month_period = pd.Period(year=year, month=month, freq='M')
+                period_start, period_end = month_period.start_time.date(), month_period.end_time.date()
+        elif period_mode == '직접 설정':
+            period_start = st.date_input('조회 시작일', period_start, key='completion_result_start', width=200)
+            period_end = st.date_input('조회 종료일', today.date(), key='completion_result_end', width=200)
+    valid_period = period_start <= period_end
+    if not valid_period:
+        st.error('시작일은 종료일보다 늦을 수 없습니다.')
+    completed = completed.loc[work_dates.between(pd.Timestamp(period_start), pd.Timestamp(period_end))].copy() if valid_period else completed.iloc[:0]
+    if valid_period:
+        st.caption(f'{category} · {period_start:%Y-%m-%d} ~ {period_end:%Y-%m-%d} · 재작업일 기준 · 총 완료수량 {completed["완료수량"].sum():,.0f}대')
+    if missing_dates:
+        st.caption(f'완료일 미등록 {missing_dates:,}건은 기간을 확인할 수 없어 제외했습니다. 선택한 분류의 전체 완료 내역 기준입니다.')
     if not completed.empty:
         results = completed['구분'].fillna('').astype(str).str.strip().replace('', '미지정')
         types=completed.groupby(results)['완료수량'].sum().sort_values(ascending=False)
