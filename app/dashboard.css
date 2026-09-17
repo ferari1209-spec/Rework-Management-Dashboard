@@ -37,7 +37,7 @@ h3 {font-size:1.05rem!important}
 .kpi-value {font-size:29px;line-height:1.5;font-weight:750;letter-spacing:-.6px}
 .kpi-note {font-size:11px;color:#8999b0;margin-top:8px}
 .section-heading {font-weight:700;color:#203650;font-size:15px;margin-bottom:4px}
-.st-key-age_panel,.st-key-status_panel,.st-key-team_panel,.st-key-trend_panel,.st-key-site_panel,.st-key-detail_panel {background:#fff;border-color:#e3e9f2!important;border-radius:15px!important;box-shadow:inset 0 1px 0 #fff,0 3px 5px #2036500a,0 9px 24px #20365014}
+.st-key-age_panel,.st-key-status_panel,.st-key-team_panel,.st-key-trend_panel,.st-key-site_panel,.st-key-completion_result_panel,.st-key-detail_panel {background:#fff;border-color:#e3e9f2!important;border-radius:15px!important;box-shadow:inset 0 1px 0 #fff,0 3px 5px #2036500a,0 9px 24px #20365014}
 .section-caption {color:#8190a7;font-size:12px;margin-bottom:8px}
 .st-key-auth_card {max-width:470px;margin:5vh auto 0;background:white;border:1px solid #e0e7f2;border-radius:23px;padding:30px 32px;box-shadow:0 20px 70px #19365a1c}
 .st-key-auth_card .auth-brand {text-align:center;font-size:27px;font-weight:750;color:#1a3556;margin-bottom:5px}
@@ -50,12 +50,12 @@ h3 {font-size:1.05rem!important}
 @media(max-width:760px){.rework-slogan{margin-top:22px;padding-top:16px;border-top:1px solid #ffffff15}.slogan-intro{font-size:22px}.slogan-message{font-size:19px}}
 
 /* 모든 그래프의 공통 디자인 */
-.st-key-age_panel,.st-key-status_panel,.st-key-team_panel,.st-key-trend_panel,.st-key-site_panel,.st-key-history_chart {
+.st-key-age_panel,.st-key-status_panel,.st-key-team_panel,.st-key-trend_panel,.st-key-site_panel,.st-key-completion_result_panel,.st-key-history_chart {
     background:linear-gradient(160deg,#f5f8fb,#edf3f8)!important;
     border:1px solid #d3dfe9!important;
     box-shadow:inset 0 1px 0 #fff,0 4px 8px #2036500a,0 12px 26px #20365014;
 }
-.st-key-age_panel h3,.st-key-status_panel h3,.st-key-team_panel h3,.st-key-trend_panel h3,.st-key-site_panel h3,.st-key-history_chart h3 {
+.st-key-age_panel h3,.st-key-status_panel h3,.st-key-team_panel h3,.st-key-trend_panel h3,.st-key-site_panel h3,.st-key-completion_result_panel h3,.st-key-history_chart h3 {
     background:#e5edf4;
     border-left:3px solid #18a6b5;
     border-radius:7px;
