@@ -176,9 +176,12 @@ with st.container(border=True,key='detail_panel'):
     else:
         detail=long_term.sort_values('age_days',ascending=False)[['입고일','모델명','site','담당자','담당팀','입고수량','age_days','구분']].rename(columns={'site':'SITE','age_days':'경과일'})
         st.dataframe(detail,hide_index=True,use_container_width=True,column_config={'경과일':st.column_config.NumberColumn(format='%d일')})
-with st.expander('재작업 유형별 재고'):
-    if not inv.empty:
-        types=inv.groupby(inv['구분'].fillna('미지정'))['수량'].sum().rename('재고수량 (대)')
+with st.expander('처리 결과별 완료수량'):
+    st.caption('선택한 분류의 전체 누적 완료 내역 · 구분별 완료수량 합계 · 단위: 대')
+    completed = df[df['status'] == '완료'].copy()
+    if not completed.empty:
+        results = completed['구분'].fillna('').astype(str).str.strip().replace('', '미지정')
+        types=completed.groupby(results)['완료수량'].sum().rename('완료수량 (대)')
         st.dataframe(types,use_container_width=True)
-    else: st.caption('현재 재고가 없습니다.')
+    else: st.caption('완료된 내역이 없습니다.')
 conn.close()
