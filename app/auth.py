@@ -3,6 +3,7 @@
 from __future__ import annotations
 
 import sqlite3
+from collections.abc import Callable
 
 import bcrypt
 import streamlit as st
@@ -174,7 +175,7 @@ def require_login() -> dict | None:
     st.stop()
 
 
-def render_auth_screen(conn: sqlite3.Connection) -> None:
+def render_auth_screen(conn: sqlite3.Connection, *, on_authenticated: Callable[[], object] | None = None) -> None:
     st.markdown("### 로그인")
     st.caption("승인된 계정만 이용 가능합니다.")
     tab_login, tab_signup = st.tabs(["로그인", "회원가입"])
@@ -194,6 +195,8 @@ def render_auth_screen(conn: sqlite3.Connection) -> None:
                 st.session_state['_login_token']=token
                 st.session_state.pop('_logged_out',None)
                 queue_cookie(token,remember_email=user['email'] if remember else '')
+                if on_authenticated is not None:
+                    on_authenticated()
                 st.rerun()
             else:
                 st.error(message)
