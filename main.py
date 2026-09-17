@@ -12,14 +12,19 @@ inject_css()
 conn = get_connection()
 ensure_schema(conn)
 seed_settings(conn)
+# Keep the authentication region at a stable position across reruns. Clear it
+# before cookie synchronization can stop/rerun the script or pages start loading.
+auth_region = st.empty()
 flush_cookie()
 user = current_user()
 if not user:
     def login_page():
-        with st.container(key='auth_card'):
+        if st.session_state.get('_backup_restore_notice'):
+            st.success('백업 복원이 완료되었습니다. 백업에 있던 승인 계정으로 다시 로그인하세요.')
+        with auth_region.container(), st.container(key='auth_card'):
             st.markdown(f'<div class="auth-brand">{logo_html()}</div><div class="auth-description">재작업 통합 관리 시스템</div>', unsafe_allow_html=True)
             ensure_bootstrap_admin(conn)
-            render_auth_screen(conn)
+            render_auth_screen(conn, on_authenticated=auth_region.empty)
 
     # Register navigation before rendering authentication so pages/ discovery
     # never exposes the automatic sidebar on a fresh server session.
