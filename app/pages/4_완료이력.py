@@ -26,6 +26,21 @@ category = category_selector()
 df = fetch_items(conn, category)
 done = df[df["status"] == "완료"].copy() if not df.empty else df
 
+with st.container(width=1240, key='history_filters'):
+    filter_columns = st.columns(5)
+    filter_specs = [('모델명','inventory_2','모델명'), ('담당자','person','담당자'),
+                    ('site','location_on','SITE'), ('담당팀','groups','담당팀'),
+                    ('구분','filter_list','구분')]
+    selected_filters = {}
+    for column, (field, icon, label) in zip(filter_columns, filter_specs):
+        values = sorted(done[field].dropna().astype(str).unique().tolist()) if field in done else []
+        with column:
+            selected_filters[field] = st.selectbox(
+                f':material/{icon}: {label}', [None] + values,
+                format_func=lambda value: '(전체)' if value is None else (value or '(미입력)'),
+                key=f'history_filter_{category}_{field}')
+    st.caption('5개 필터는 완료 목록과 선택 다운로드에 적용됩니다. 구분은 재작업 이후 처리 결과입니다.')
+
 with st.container(width=460, key='compact_filters'):
     c1, c2 = st.columns(2)
     with c1:
@@ -43,6 +58,9 @@ if not done.empty:
 else:
     view = done
 
+for field, value in selected_filters.items():
+    if value is not None and field in view:
+        view = view[view[field].astype('string').eq(value).fillna(False)]
 view = search_table(view, f'done_search_{category}', count_label='완료 건수')
 _, selected = selectable_table(
     view[
@@ -56,7 +74,7 @@ history_chart = st.container(border=True, key='history_chart')
 history_chart.markdown("### 월별 입고수량 vs 월재작업수량")
 current_month = pd.Timestamp.today().to_period('M')
 with history_chart:
-    st.caption('기본 최근 12개월 · 위 완료이력 조회 기간과 별도로 설정합니다. 선택한 시작월부터 종료월까지 월 전체를 집계합니다.')
+    st.caption('기본 최근 12개월 · 위 목록의 5개 필터·부분 검색·조회 기간과 별도로 집계합니다. 선택한 시작월부터 종료월까지 월 전체를 집계합니다.')
     with st.container(width=460):
         start_col, end_col = st.columns(2)
     chart_start = start_col.date_input(':material/calendar_month: 그래프 시작월', value=(current_month-11).start_time.date(), key='history_chart_start')
