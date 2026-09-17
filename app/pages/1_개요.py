@@ -169,6 +169,23 @@ with right,st.container(border=True,key='site_panel'):
         site=inv.groupby(inv['site'].fillna('미지정'))['수량'].sum().nlargest(10).sort_values()
         chart(go.Figure(go.Bar(x=site.values,y=site.index,orientation='h',marker_color='#729bc0',hovertemplate='%{y}: %{x:,}대<extra></extra>')))
 
+with st.container(border=True, key='completion_result_panel'):
+    st.markdown('### 처리 결과별 완료수량')
+    st.caption('선택한 분류의 전체 누적 완료 내역 · 구분별 완료수량 합계 · 단위: 대')
+    completed = df[df['status'] == '완료'].copy()
+    if not completed.empty:
+        results = completed['구분'].fillna('').astype(str).str.strip().replace('', '미지정')
+        types=completed.groupby(results)['완료수량'].sum().sort_values(ascending=False)
+        fig=go.Figure(go.Bar(
+            x=types.values, y=types.index, orientation='h', marker_color=COLORS[0],
+            hovertemplate='%{y}: %{x:,.0f}대<extra></extra>',
+        ))
+        fig.update_yaxes(autorange='reversed', automargin=True)
+        fig.update_xaxes(title_text='완료수량 (대)', rangemode='tozero',
+                         range=[0, max(float(types.max()) * 1.15, 1)])
+        chart(fig, max(240, len(types) * 45 + 90))
+    else: st.caption('완료된 내역이 없습니다.')
+
 with st.container(border=True,key='detail_panel'):
     st.markdown('### 장기재고 상세')
     st.caption('오래된 입고 순 · 입고일 수정 및 완료 처리는 재고현황에서 진행하세요.')
@@ -176,12 +193,4 @@ with st.container(border=True,key='detail_panel'):
     else:
         detail=long_term.sort_values('age_days',ascending=False)[['입고일','모델명','site','담당자','담당팀','입고수량','age_days','구분']].rename(columns={'site':'SITE','age_days':'경과일'})
         st.dataframe(detail,hide_index=True,use_container_width=True,column_config={'경과일':st.column_config.NumberColumn(format='%d일')})
-with st.expander('처리 결과별 완료수량'):
-    st.caption('선택한 분류의 전체 누적 완료 내역 · 구분별 완료수량 합계 · 단위: 대')
-    completed = df[df['status'] == '완료'].copy()
-    if not completed.empty:
-        results = completed['구분'].fillna('').astype(str).str.strip().replace('', '미지정')
-        types=completed.groupby(results)['완료수량'].sum().rename('완료수량 (대)')
-        st.dataframe(types,use_container_width=True)
-    else: st.caption('완료된 내역이 없습니다.')
 conn.close()
