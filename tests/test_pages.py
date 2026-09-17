@@ -104,9 +104,26 @@ class Pages(unittest.TestCase):
         at.button[0].click().run()
         self.assertFalse(at.exception,str(at.exception))
         at.text_input(key='login_id').set_value('newadmin@example.com')
+        at.text_input(key='login_pw').set_value('WrongPassword!')
+        next(b for b in at.button if b.label=='로그인').click().run()
+        self.assertTrue(at.error)
+        self.assertTrue(any(b.label == '로그인' for b in at.button))
         at.text_input(key='login_pw').set_value('Testing123!')
         next(b for b in at.button if b.label=='로그인').click().run()
         self.assertFalse(at.exception,str(at.exception))
         self.assertEqual(at.session_state['user']['login_id'],'newadmin@example.com')
+        # Cookie persistence pauses the rerun. The old login card must already
+        # be removed during that pause, not only once the dashboard finishes.
+        self.assertTrue(any('로그인 상태를 저장' in c.value for c in at.caption))
+        self.assertFalse(any(b.label == '로그인' for b in at.button))
+        self.assertFalse(any(getattr(b, 'key', None) == 'auth_card' for b in at.get('flex_container')))
+        pending = at.session_state['_cookie_pending']
+        with patch('app.browser_login.cookie_component', return_value={
+            'request_id': pending['request_id'], 'ok': True
+        }):
+            at.run()
+        self.assertFalse(at.exception, str(at.exception))
+        self.assertFalse(any(b.label == '로그인' for b in at.button))
+        self.assertTrue(any(b.label == '로그아웃' for b in at.button))
 
 if __name__=='__main__': unittest.main()

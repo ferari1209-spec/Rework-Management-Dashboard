@@ -43,6 +43,56 @@ class Workflows(unittest.TestCase):
         self.assertEqual(split_remark('사업장,,001')['serial'],'001')
         self.assertFalse(split_remark('사업장,,001')['담당자'])
         self.assertIn('비고 누락',split_remark(float('nan'))['flags'])
+
+    def test_master_sync_update_skip_and_insert(self):
+        self.save(self.frame(source_no=1),digest='first')
+        old_id=self.conn.execute('SELECT id FROM rework_items').fetchone()[0]
+        self.assertEqual(self.save(self.frame(source_no=1),digest='same'),0)
+        new=pd.concat([self.frame(source_no=1,완료수량=1,재작업일='2026-09-16',담당팀='생산팀'),
+                       self.frame(source_no=2,serial='0002')],ignore_index=True)
+        stats=commit_import(self.conn,new,'완제품','changed','master.xls',date.today(),'admin','master',return_summary=True)
+        self.assertEqual(stats,{'신규':1,'변경':1,'동일':0})
+        rows=self.conn.execute('SELECT * FROM rework_items ORDER BY id').fetchall()
+        self.assertEqual(len(rows),2)
+        self.assertEqual(rows[0]['id'],old_id)
+        self.assertEqual(rows[0]['status'],'완료')
+        self.assertEqual(rows[0]['담당팀'],'생산팀')
+
+    def test_master_sync_blank_preserves_and_conflict_rolls_back(self):
+        self.save(self.frame(source_no=1,담당팀='원팀'),digest='first')
+        self.save(self.frame(source_no=1,투입공수='-',담당팀=None),digest='blank')
+        row=self.conn.execute('SELECT * FROM rework_items').fetchone()
+        self.assertEqual(row['투입공수'],0.8)
+        self.assertEqual(row['담당팀'],'원팀')
+        incoming=pd.concat([self.frame(source_no=2,serial='new'),self.frame(source_no=1,serial='wrong')])
+        with self.assertRaises(ValueError):self.save(incoming,digest='conflict')
+        self.assertEqual(self.conn.execute('SELECT COUNT(*) FROM rework_items').fetchone()[0],1)
+        self.assertFalse(self.conn.execute("SELECT 1 FROM import_batches WHERE digest='conflict'").fetchone())
+
+    def test_master_sync_ambiguous_existing_not_merged(self):
+        self.save(self.frame(),digest='first')
+        self.save(self.frame(),digest='erp',kind='erp')
+        self.conn.execute("UPDATE rework_items SET 입고일='2026-01-01'");self.conn.commit()
+        with self.assertRaises(ValueError):self.save(self.frame(완료수량=1),digest='ambiguous')
+
+    def test_upload_editable_fields_and_dash_hours(self):
+        from app.services.import_service import editable_import_frame, review_rows
+        frame=self.frame(투입공수=' - ',완료수량=1)
+        frame['flags']='old';frame['has_issue']=True
+        editable=editable_import_frame(frame,'erp',date(2026,9,11))
+        self.assertNotIn('flags',editable)
+        self.assertTrue(all(str(dtype)=='string' for dtype in editable.dtypes))
+        editable.loc[0,'입고일']='2026-09-10'
+        editable.loc[0,'비고_원문']='검수 수정'
+        reviewed=review_rows(editable,self.conn)
+        self.assertNotIn('투입공수',reviewed.iloc[0]['flags'])
+        commit_import(self.conn,reviewed,'완제품','dash','file.xls',date(2026,9,11),'admin','erp',reviewed_dates=True)
+        row=self.conn.execute('SELECT * FROM rework_items').fetchone()
+        self.assertIsNone(row['투입공수'])
+        self.assertEqual(row['입고일'],'2026-09-10')
+        self.assertEqual(row['비고_원문'],'검수 수정')
+        self.assertEqual(row['status'],'완료')
+        with self.assertRaises(ValueError):self.save(self.frame(투입공수='abc'),digest='invalid')
     def test_analysis_permissions_and_outliers(self):
         from app.services.analysis_service import analyze
         self.save(pd.concat([self.frame(투입공수=h,완료수량=1,재작업일='2026-09-01',구분='재작업') for h in [1,1,1,1,1,10]],ignore_index=True))
